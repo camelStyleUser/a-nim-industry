@@ -1,5 +1,5 @@
 
-import core, vars
+import core, vars,fau/fmath
 
 template createUnits*() =
   const 
@@ -85,7 +85,36 @@ template createUnits*() =
     drawBloom:
       unit.getTexture("-glow").draw(pos, scl = scl, mixcolor = rgba(1f, 1f, 1f, fau.time.sin(0.5f, 0.2f).abs))
   )
+  unitKiller.draw = (proc(unit: Unit, basePos: Vec2) =
+    let 
+      heal = %"84f490"
+      col1 = %"235e62"
+      col2 = %"3a8a72"
 
+    patStripes(col1, col2)
+    patGradient(col2)
+    patVertGradient(heal)
+
+    fillPoly(basePos, 4, 3f, color = heal)
+    poly(basePos, 4, 5f, stroke = 1f, color = heal)
+    patLines(heal)
+
+    patVertGradient(col2.withA(0.6f), col2.withA(0f))
+
+    let 
+      scl = getScl(0.175f)
+      pos = basePos + hoverOffset()
+
+    unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
+
+    drawBloom:
+      patCircles(heal, time = fau.time, amount = 100)
+
+    unit.getTexture.draw(pos, scl = scl)
+
+    drawBloom:
+      unit.getTexture("-glow").draw(pos, scl = scl, mixcolor = rgba(1f, 1f, 1f, fau.time.sin(0.5f, 0.2f).abs))
+  )
   unitOct.draw = (proc(unit: Unit, basePos: Vec2) =
     let 
       heal = %"84f490"
@@ -300,6 +329,13 @@ template createUnits*() =
   unitMono.abilityProc = proc(entity: EntityRef, moves: int) =
     if moves mod 4 == 0:
       addPoints(1)
+  unitKiller.abilityProc = proc(entity: EntityRef, moves: int) =
+    let pos = entity.fetch(GridPos).vec
+    let dir = entity.fetch(Input).lastMove
+    if (moves mod 6)<2:
+      for i in 1..3:
+        effectExplode((pos + dir*i).vec2)
+        damageBlocks(pos + dir*i)
 
   unitOct.abilityProc = proc(entity: EntityRef, moves: int) =
     var input = entity.fetch(Input)

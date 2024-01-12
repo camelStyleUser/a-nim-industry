@@ -3,13 +3,12 @@ import types, fau/g2/[font, ui], core, std/[options, deques]
 const
   #pixels
   tileSize* = 20f
-
   hitDuration* = 0.6f
   noMusic* = false
   mapSize* = 6
   fftSize* = 50
   #copper needed for 1 gamble
-  copperForRoll* = 10
+  copperForRoll* = 0
   #copper received for first map completion
   completionCopper* = 10
   defaultMapReward* = 8
@@ -28,6 +27,7 @@ const
 
 var
   allMaps*: seq[Beatmap]
+  selectableUnits*:seq[Unit]
   #Settings state.
   settings*: Settings = Settings(globalVolume: 1f)
   #Per-map state. Resets between games.
@@ -156,5 +156,10 @@ let
     ability: "the gacha game experience",
     unobtainable: true
   )
-
-  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitBoulder]
+  unitKiller* = Unit(
+    name: "kill",
+    title: "-KILLED-",
+    subtitle: "the killer",
+    ability: "kills healers"
+  )
+  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitKiller, unitBoulder]

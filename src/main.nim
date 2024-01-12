@@ -81,7 +81,9 @@ onEcsBuilt:
   
   proc playMap(next: Beatmap, offset = 0.0) =
     reset()
-
+    selectableUnits= save.units
+    echo(save.units.len)
+    echo(selectableUnits.len)
     #start with first unit
     makeUnit(vec2i(0, 0), if save.lastUnit != nil: save.lastUnit else: save.units[0])
 
@@ -169,7 +171,7 @@ proc rollUnit*(): Unit =
     return unitBoulder
 
   #not all units; alpha and boulder are excluded
-  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei])
+  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitKiller])
 
 proc fading(): bool = fadeTarget != nil
 
@@ -215,6 +217,7 @@ proc sortUnits =
 proc togglePause =
   mode = if mode != gmPlaying: gmPlaying else: gmPaused
   if mode == gmPlaying:
+    selectableUnits=save.units
     soundUnpause.play()
   else:
     soundPause.play()
@@ -263,7 +266,7 @@ makeSystem("core", []):
     enableSoundVisualization()
 
     createMaps()
-    allMaps = @[map1, map2, map3, map4, map5]
+    allMaps = @[map1, map2, map3, map4, map5,map6]
 
     createUnits()
 
@@ -311,7 +314,21 @@ makeSystem("core", []):
   
   #trigger game over
   if mode == gmPlaying and health() <= 0:
-    mode = gmDead
+    echo(selectableUnits.len)
+    echo("")
+    if selectableUnits.len<2:
+      mode = gmDead
+    else:
+      let player = sysInput.groups[0]
+      echo(selectableUnits.find(save.lastUnit))
+      selectableUnits.delete(selectableUnits.find(save.lastUnit))
+      state.hits=0
+      let unit=sample(selectableUnits)
+      save.lastUnit = unit
+      player.unitDraw.unit = unit
+      player.unitDraw.switchTime = 1f
+      player.input.lastSwitchTime = musicTime()
+      mode=gmPlaying
     soundDie.play()
 
   if (isMobile and mode == gmMenu and keyEscape.tapped and splashUnit.isNone) or defined(debug):
@@ -398,10 +415,10 @@ makeSystem("input", [GridPos, Input, UnitDraw, Pos]):
     axis2 = axisTap2(keyLeft, keyRight, keyDown, keyUp)
 
   all:
-    const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0]
-
+    const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0,keyKp1,keyKp2,keyKp3,keyKp4,keyKp5,keyKp6,keyKp7,keyKp8,keyKp9,keyKp0,keyU,keyI,keyO,keyP]
+    
     if item.input.lastSwitchTime == 0f or musicTime() >= item.input.lastSwitchTime + switchDelay:
-      for i, unit in save.units:
+      for i, unit in selectableUnits:
         if unit != item.unitDraw.unit and i < switchKeys.len and (switchKeys[i].tapped or mobileUnitSwitch == i):
           item.unitDraw.unit = unit
           item.unitDraw.switchTime = 1f

@@ -97,6 +97,7 @@ makeSystem("drawUI", []):
           playMap(map)
           mode = gmPlaying
 
+
     if button(rectCenter(buttonPos, 3f, 1f), "Menu"):
       safeTransition:
         reset()
@@ -172,7 +173,7 @@ makeSystem("drawUI", []):
     if sysInput.groups.len > 0:
       let player = sysInput.groups[0]
 
-      for i, unit in save.units:
+      for i, unit in selectableUnits:
         let 
           pos = screen.xy + vec2(i.float32 * 0.8f, bottomMargin)
           current = player.unitDraw.unit == unit
