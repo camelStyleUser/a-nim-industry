@@ -63,6 +63,8 @@ defineEffects:
   lancerAppear:
     draw("lancer2".patchConst, e.pos, rotation = e.rotation - 90f.rad, scl = vec2(state.moveBeat * 0.16f + min(e.fin.powout(3f), e.fout.powout(20f))), z = 3001f)
   
+  sniperAppear:
+    draw("sniperturret".patchConst, e.pos, rotation = e.rotation - 90f.rad, scl = vec2(state.moveBeat * 0.16f + min(e.fin.powout(3f), e.fout.powout(20f))), z = 3001f)
   warnBullet:
     #poly(e.pos, 4, e.fout.pow(2f) * 0.6f + 0.5f, stroke = 4f.px * e.fout + 2f.px, color = colorWhite, rotation = 45f.rad)
     draw("bullet".patchConst, e.pos, rotation = e.rotation, size = vec2(16f.px), mixColor = colorWhite, color = colorWhite.withA(e.fin))

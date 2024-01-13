@@ -31,7 +31,8 @@ onEcsBuilt:
 
   proc makeLaser(pos: Vec2i, dir: Vec2i) =
     discard newEntityWith(Scaled(scl: 1f), DrawLaser(dir: dir), Pos(), GridPos(vec: pos), Damage(), Lifetime(turns: 1))
-
+  proc makeClassicLaser(pos: Vec2i, dir: Vec2i) =
+    discard newEntityWith(Scaled(scl: 1f), DrawClassicLaser(dir: dir), Pos(), GridPos(vec: pos), Damage(), Lifetime(turns: 2))
   proc makeRouter(pos: Vec2i, length = 2, life = 2, diag = false, sprite = "router", alldir = false) =
     discard newEntityWith(DrawSpin(sprite: sprite), Scaled(scl: 1f), Destructible(), Pos(), GridPos(vec: pos), Damage(), SpawnConveyors(len: length, diagonal: diag, alldir: alldir), Lifetime(turns: life))
 
@@ -856,7 +857,12 @@ makeSystem("drawLaser", [Pos, DrawLaser, Scaled]):
       fin = (item.scaled.time / 0.3f).clamp
       fout = 1f - fin
     draw("laser".patchConst, item.pos.vec, z = zlayer(item) + 1f.px, rotation = item.drawLaser.dir.vec2.angle, scl = vec2(1f, (fout.powout(4f) + fout.pow(3f) * 0.4f) * item.scaled.scl), mixcolor = colorWhite.withA(fout.pow(3f)))
-
+makeSystem("drawClassicLaser", [Pos, DrawClassicLaser, Scaled]):
+  all:
+    let 
+      fin = (item.scaled.time / 0.3f).clamp
+      fout = 1f - fin
+    draw("conduit".patchConst, item.pos.vec, z = zlayer(item) + 1f.px, rotation = item.drawClassicLaser.dir.vec2.angle, scl = vec2(1f, (fout.powout(4f) + fout.pow(3f) * 0.4f) * item.scaled.scl), mixcolor = colorWhite.withA(fout.pow(3f)))
 makeSystem("drawUnit", [Pos, UnitDraw, Input]):
   all:
 

@@ -51,7 +51,8 @@ register(defaultCompOpts):
 
     DrawLaser = object
       dir: Vec2i
-    
+    DrawClassicLaser = object
+      dir: Vec2i
     DrawDamageField = object
 
     Bounce = object

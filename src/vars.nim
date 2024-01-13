@@ -8,7 +8,7 @@ const
   mapSize* = 6
   fftSize* = 50
   #copper needed for 1 gamble
-  copperForRoll* = 0
+  copperForRoll* = -1
   #copper received for first map completion
   completionCopper* = 10
   defaultMapReward* = 8

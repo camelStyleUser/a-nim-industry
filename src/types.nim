@@ -73,6 +73,7 @@ type Gamemode* = enum
   gmPaused,
   #ran out of health
   gmDead,
+  gmLoadout,
   #finished track, diisplaying stats
   gmFinished
 

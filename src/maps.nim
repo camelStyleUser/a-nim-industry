@@ -33,7 +33,14 @@ template laser*(pos, dir: Vec2i) =
     capture dest:
       runDelayi 1:
         makeLaser(dest, dir)
-
+template Classiclaser*(pos, dir: Vec2i) =
+  effectSniperAppear(pos.vec2 - dir.vec2/1.4f, life = beatSpacing() * 3f, rotation = dir.vec2.angle)
+  let p = pos
+  for len in 0..(mapSize*2):
+    let dest = pos + dir * len
+    capture dest:
+      runDelayi 1:
+        makeClassicLaser(dest, dir)
 proc modSize*(num: int): int =
   num.mod(mapSize * 2 + 1) - mapSize
 
@@ -959,12 +966,12 @@ template createMaps* =
     )
   )
   map6 = Beatmap(
-    songName: "final solution when all other have failed",
+    songName: "classic",
     music: "remember",
-    bpm: 121f,
+    bpm: 100f,
     beatOffset: 0f / 1000f,
     maxHits: 10,
-    copperAmount: 8,
+    copperAmount: 14,
     fadeColor: %"fa874c",
     drawPixel: (proc() =
       #TODO better background, with beats
@@ -1003,7 +1010,6 @@ template createMaps* =
     update: (proc() =
       if state.newTurn or (state.turn == 0 and sysSnek.groups.len == 0):
         let turn = state.turn
-
         template botLeftConvey(offset = 0) = 
           let
             t = turn - offset
@@ -1039,7 +1045,7 @@ template createMaps* =
         template botTrackLaser =
           let space = 2
           if (turn - 1) mod space == 0:
-            laser(vec2i(state.playerPos.x, -mapSize), vec2i(0, 1))
+            ClassicLaser(vec2i(state.playerPos.x, -mapSize), vec2i(0, 1))
 
         template sideBursts =
           let space = 4
@@ -1050,7 +1056,7 @@ template createMaps* =
             effectWarn(pos.vec2, life = beatSpacing())
             capture pos:
               runDelay:
-                bulletCircle(pos, "bullet-pink")
+                bulletCircle(pos, "bullet-classic")
 
         template trackConveyors =
           let space = 2
@@ -1073,7 +1079,7 @@ template createMaps* =
             for dir in d4():
               for i in -1..1:
                 let pos = dir + vec2i(mapSize, i).rotate(rot)
-                delayBulletWarn(pos, -dir, "bullet-pink")
+                delayBulletWarn(pos, -dir, "bullet-classic")
               rot.inc
         
         template diagBullets(offset: int) =
@@ -1083,7 +1089,7 @@ template createMaps* =
               effectWarn(pos.vec2, life = beatSpacing())
               capture pos:
                 runDelay:
-                  bulletCircle(pos, "bullet-pink")
+                  bulletCircle(pos, "bullet-classic")
         
         template trackConveyorTop =
           let space = 4
@@ -1128,7 +1134,7 @@ template createMaps* =
                 runDelayi(i):
                   effectStrikeWave(pos.vec2, rotation = i.float32, life = beatSpacing())
                   if i == 3:
-                    bulletCircle(pos, "bullet-pink")
+                    bulletCircle(pos, "bullet-classic")
 
         template randomConveyors =
           const xs = [0, 1, 3, 5, 2, 4, 6, 0, 2, 4]
@@ -1155,7 +1161,7 @@ template createMaps* =
               capture pos:
                 runDelay:
                   for dir in d4():
-                    makeBullet(pos, dir, "bullet-pink")
+                    makeBullet(pos, dir, "bullet-classic")
 
         template diagSorters =
           for i in signsi():

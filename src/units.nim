@@ -87,9 +87,9 @@ template createUnits*() =
   )
   unitKiller.draw = (proc(unit: Unit, basePos: Vec2) =
     let 
-      heal = %"84f490"
-      col1 = %"235e62"
-      col2 = %"3a8a72"
+      heal = %"d3da00"
+      col1 = %"bac000"
+      col2 = %"e2e900"
 
     patStripes(col1, col2)
     patGradient(col2)
@@ -103,7 +103,7 @@ template createUnits*() =
 
     let 
       scl = getScl(0.175f)
-      pos = basePos + hoverOffset()
+      pos = basePos + hoverOffset()*4
 
     unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
 
