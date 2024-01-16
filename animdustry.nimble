@@ -114,7 +114,7 @@ task android, "Android Run":
 task androidPackage, "Create Android APK (Debug)":
   androidBuildTask()
   cd "android"
-  shell "./gradlew assembleDebug"
+  shell "./gradlew assembleDebug -Dorg.gradle.jvmargs=--add-opens=java.base/java.io=ALL-UNNAMED"
 
 task androidRelease, "Create Android APK (Release)":
   androidBuildTask()

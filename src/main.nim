@@ -407,6 +407,8 @@ makeSystem("input", [GridPos, Input, UnitDraw, Pos]):
   let 
     axis1 = axisTap2(keyA, keyD, KeyCode.keyS, keyW)
     axis2 = axisTap2(keyLeft, keyRight, keyDown, keyUp)
+    axis3 = axisTap2(keyF, keyH, keyG, keyT)
+
 
   all:
     const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0,keyKp1,keyKp2,keyKp3,keyKp4,keyKp5,keyKp6,keyKp7,keyKp8,keyKp9,keyKp0,keyU,keyI,keyO,keyP]
