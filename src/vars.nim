@@ -8,7 +8,7 @@ const
   mapSize* = 6
   fftSize* = 50
   #copper needed for 1 gamble
-  copperForRoll* = -1
+  copperForRoll* = 10
   #copper received for first map completion
   completionCopper* = 10
   defaultMapReward* = 8
@@ -26,6 +26,7 @@ const
   ingameModes* = {gmPaused, gmPlaying, gmDead, gmFinished}
 
 var
+  
   allMaps*: seq[Beatmap]
   selectableUnits*:seq[Unit]
   #Settings state.
@@ -156,10 +157,25 @@ let
     ability: "the gacha game experience",
     unobtainable: true
   )
-  unitKiller* = Unit(
-    name: "kill",
-    title: "-KILLED-",
-    subtitle: "the killer",
-    ability: "kills healers"
+  unitFlare* = Unit(
+    name: "flare",
+    title: "<FLARE>",
+    subtitle: "ha ha gun go pew pew",
+    ability: "pew pew 6",
+    abilityReload:6
   )
-  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitKiller, unitBoulder]
+  unitEclipse* = Unit(
+    name: "eclipse",
+    title: "<ECLIPSE>",
+    subtitle: "ha ha big guns go pew pew",
+    ability: "big pew pew 5",
+    abilityReload:5
+  )
+  unitRanai* = Unit(
+    name: "ranai",
+    title: "[RANAI]",
+    subtitle: "the overseer",
+    ability: "random schematic from #schematics",
+    abilityReload:8
+  )
+  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitFlare,unitEclipse,unitRanai, unitBoulder]

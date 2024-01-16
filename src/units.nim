@@ -1,6 +1,6 @@
+import std/[tables, sequtils, algorithm, macros, options, random, math, strformat, deques]
 
 import core, vars,fau/fmath
-
 template createUnits*() =
   const 
     shadowOffset = vec2(0.3f)
@@ -12,7 +12,6 @@ template createUnits*() =
   proc drawShadowed(patch: Patch, pos: Vec2, scl: Vec2) =
     patch.draw(pos - shadowOffset, scl = scl, color = shadowColor)
     patch.draw(pos, scl = scl)
-
   unitBoulder.draw = (proc(unit: Unit, basePos: Vec2) =
     let 
       scl = getScl(0.165f)
@@ -54,7 +53,30 @@ template createUnits*() =
 
     unit.getTexture.draw(pos, scl = scl)
   )
+  unitRanai.draw = (proc(unit: Unit, basePos: Vec2) =
 
+    let 
+      scl = getScl(0.050f)
+      pos = basePos - vec2(0f, 0.5f) + hoverOffset() * 0.5f
+    patStripes(%"463e72",%"9b7890")
+    unit.getTexture.draw(pos, scl = scl)
+  )
+  unitFlare.draw = (proc(unit: Unit, basePos: Vec2) =
+
+    let 
+      scl = getScl(0.15f)
+      pos = basePos - vec2(0f, 0.5f) + hoverOffset() * 0.5f
+    patStripes(%"76e348",%"39b319")
+    unit.getTexture.draw(pos, scl = scl)
+  )
+  unitEclipse.draw = (proc(unit: Unit, basePos: Vec2) =
+
+    let 
+      scl = getScl(0.20f)
+      pos = basePos - vec2(0f, 0.5f) + hoverOffset() * 0.5f
+    patStripes(%"a62848",%"be3819")
+    unit.getTexture.draw(pos, scl = scl)
+  )
   unitMono.draw = (proc(unit: Unit, basePos: Vec2) =
     let 
       heal = %"84f490"
@@ -74,36 +96,6 @@ template createUnits*() =
     let 
       scl = getScl(0.175f)
       pos = basePos + hoverOffset()
-
-    unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
-
-    drawBloom:
-      patCircles(heal, time = fau.time, amount = 100)
-
-    unit.getTexture.draw(pos, scl = scl)
-
-    drawBloom:
-      unit.getTexture("-glow").draw(pos, scl = scl, mixcolor = rgba(1f, 1f, 1f, fau.time.sin(0.5f, 0.2f).abs))
-  )
-  unitKiller.draw = (proc(unit: Unit, basePos: Vec2) =
-    let 
-      heal = %"d3da00"
-      col1 = %"bac000"
-      col2 = %"e2e900"
-
-    patStripes(col1, col2)
-    patGradient(col2)
-    patVertGradient(heal)
-
-    fillPoly(basePos, 4, 3f, color = heal)
-    poly(basePos, 4, 5f, stroke = 1f, color = heal)
-    patLines(heal)
-
-    patVertGradient(col2.withA(0.6f), col2.withA(0f))
-
-    let 
-      scl = getScl(0.175f)
-      pos = basePos + hoverOffset()*4
 
     unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
 
@@ -329,14 +321,6 @@ template createUnits*() =
   unitMono.abilityProc = proc(entity: EntityRef, moves: int) =
     if moves mod 4 == 0:
       addPoints(1)
-  unitKiller.abilityProc = proc(entity: EntityRef, moves: int) =
-    let pos = entity.fetch(GridPos).vec
-    let dir = entity.fetch(Input).lastMove
-    if (moves mod 6)<2:
-      for i in 1..3:
-        effectExplode((pos + dir*i).vec2)
-        damageBlocks(pos + dir*i)
-
   unitOct.abilityProc = proc(entity: EntityRef, moves: int) =
     var input = entity.fetch(Input)
     if input.shielded:
@@ -354,14 +338,44 @@ template createUnits*() =
       for dir in d4mid():
         effectExplode((pos + dir).vec2)
         damageBlocks(pos + dir)
-  
+  unitRanai.abilityProc = proc(entity: EntityRef, moves: int) =
+    let pos = entity.fetch(GridPos).vec
+    let HealthAdd= [-1,-2,3,1,2]
+    if not state.newTurn:
+      return
+    if (state.turn mod 8) != 0:
+      return
+    if true:
+      let id = rand(4)
+      state.hits-=HealthAdd[id]
+      if state.hits<0:
+        state.hits=0
+      #not talking about this anytime soon
+      unitRanai.getTexture("-" & $(id)).draw(pos.vec2,scl=getScl(1f))
+  unitFlare.abilityProc = proc(entity: EntityRef, moves: int) =
+    if (moves mod 6) != 0:
+      return
+    let pos = entity.fetch(GridPos).vec
+    let dir = entity.fetch(Input).lastMove
+    makePlayerBullet(pos+dir,dir,4)
+  unitEclipse.abilityProc = proc(entity: EntityRef, moves: int) =
+    let pos = entity.fetch(GridPos).vec
+    let dir = entity.fetch(Input).lastMove
+    if (moves mod 5) == 0:
+      makePlayerBullet(pos+dir,dir,5)
+      return
+    if (moves mod 5) == 1:
+      for i in 0..4:
+        let target = pos + dir * i
+        effectExplode(target.vec2)
+        damageBlocks(target)
+      return
   unitQuad.abilityProc = proc(entity: EntityRef, moves: int) =
     let pos = entity.fetch(GridPos).vec
-    if moves mod 6 == 0:
+    if (moves mod 6) == 0:
       for dir in d8mid():
         effectExplodeHeal((pos + dir).vec2)
         damageBlocks(pos + dir)
-  
   unitOxynoe.abilityProc = proc(entity: EntityRef, moves: int) =
     let pos = entity.fetch(GridPos).vec
     const sides = [vec2i(1, 0), vec2i(0, 1)]

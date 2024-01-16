@@ -50,7 +50,8 @@ onEcsBuilt:
 
   proc makeTurret(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo") =
     discard newEntityWith(DrawBounce(sprite: tex, rotation: face.vec2.angle - 90f.rad), Scaled(scl: 1f), Destructible(), Pos(), GridPos(vec: pos), Turret(reload: reload, dir: face), Lifetime(turns: life))
-
+  proc makePlayerBullet(pos: Vec2i,dir: Vec2i,life = 4,tex = "bullet") =
+    discard newEntityWith(DrawBullet(sprite: tex), Scaled(scl: 1f), Pos(), GridPos(vec: pos), Velocity(vec: dir), EnemyDamage())
   proc makeArc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3) =
     discard newEntityWith(DrawBounce(sprite: tex, rotation: dir.vec2.angle), LeaveBullet(life: life), Velocity(vec: dir), Bounce(count: bounces), Scaled(scl: 1f), Destructible(), Pos(), GridPos(vec: pos))
 
@@ -83,8 +84,6 @@ onEcsBuilt:
   proc playMap(next: Beatmap, offset = 0.0) =
     reset()
     selectableUnits= save.units
-    echo(save.units.len)
-    echo(selectableUnits.len)
     #start with first unit
     makeUnit(vec2i(0, 0), if save.lastUnit != nil: save.lastUnit else: save.units[0])
 
@@ -172,14 +171,10 @@ proc rollUnit*(): Unit =
     return unitBoulder
 
   #not all units; alpha and boulder are excluded
-  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitKiller])
-
+  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitFlare,unitEclipse,unitRanai])
 proc fading(): bool = fadeTarget != nil
-
-proc beatSpacing(): float = 1.0 / (state.map.bpm / 60.0)
-
+proc beatSpacing() : float = 1.0 / ( state.map.bpm / 60.0 )
 proc musicTime(): float = state.secs
-
 proc calcPitch(note: int): float32 =
   const indices = [0, 4, 7]
   let 
@@ -267,7 +262,7 @@ makeSystem("core", []):
     enableSoundVisualization()
 
     createMaps()
-    allMaps = @[map1, map2, map3, map4, map5,map6]
+    allMaps = @[map1, map2, map3, map4, map5]
 
     createUnits()
 
@@ -315,9 +310,7 @@ makeSystem("core", []):
   
   #trigger game over
   if mode == gmPlaying and health() <= 0:
-    echo(selectableUnits.len)
-    echo("")
-    if selectableUnits.len<2:
+    if 1==1:
       mode = gmDead
     else:
       let player = sysInput.groups[0]
@@ -693,7 +686,24 @@ makeSystem("damagePlayer", [GridPos, Pos, Damage, not Deleting]):
     
   for i in sys.toDelete:
     i.remove Damage
+makeSystem("damageEnemy",[GridPos,Pos,EnemyDamage,not Deleting]):
+  fields:
+    toDelete: seq[EntityRef]
 
+  sys.toDelete.setLen( 0 )
+
+  all:
+    template deleteCurrent =
+      if item.entity.has(DrawLaser):
+        sys.toDelete.add item.entity
+      else:
+        sys.deleteList.add item.entity
+      effectHit(item.gridPos.vec.vec2)
+    for other in sysDestructible.groups:
+      let pos = other.gridPos
+      if pos.vec == item.gridPos.vec:
+        deleteCurrent()
+        damageBlocks(pos.vec)
 makeSystem("updateBounce", [GridPos, Velocity, Bounce]):
   if state.newTurn:
     all:

@@ -99,7 +99,7 @@ register(defaultCompOpts):
       spawn: SpawnConveyors
     
     Damage = object
-
+    EnemyDamage = object
     RunDelay = object
       delay: int
       callback: proc()
