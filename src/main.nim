@@ -171,7 +171,7 @@ proc rollUnit*(): Unit =
     return unitBoulder
 
   #not all units; alpha and boulder are excluded
-  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitFlare,unitEclipse,unitRanai])
+  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitFlare,unitEclipse,unitRanai,unitHacker])
 proc fading(): bool = fadeTarget != nil
 proc beatSpacing() : float = 1.0 / ( state.map.bpm / 60.0 )
 proc musicTime(): float = state.secs

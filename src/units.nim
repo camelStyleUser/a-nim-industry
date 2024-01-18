@@ -61,6 +61,14 @@ template createUnits*() =
     patStripes(%"463e72",%"9b7890")
     unit.getTexture.draw(pos, scl = scl)
   )
+  unitHacker.draw = (proc(unit: Unit, basePos: Vec2) =
+
+    let 
+      scl = getScl(0.25f)
+      pos = basePos - vec2(0f, 0.5f) + hoverOffset() * 3f
+    patStripes(%"b41010",%"d52020")
+    unit.getTexture.draw(pos, scl = scl)
+  )
   unitFlare.draw = (proc(unit: Unit, basePos: Vec2) =
 
     let 
@@ -321,6 +329,12 @@ template createUnits*() =
   unitMono.abilityProc = proc(entity: EntityRef, moves: int) =
     if moves mod 4 == 0:
       addPoints(1)
+  unitHacker.abilityProc = proc(entity: EntityRef, moves: int) =
+    if moves mod 10 == 0:
+      for x in 0..<mapSize*2+1:
+        for y in 0..<mapSize*2+1:
+          effectExplode(vec2(x-mapSize,y-mapSize))
+          damageBlocks(vec2i(x-mapSize,y-mapSize))
   unitOct.abilityProc = proc(entity: EntityRef, moves: int) =
     var input = entity.fetch(Input)
     if input.shielded:

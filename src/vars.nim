@@ -178,4 +178,11 @@ let
     ability: "random schematic from #schematics",
     abilityReload:8
   )
-  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitFlare,unitEclipse,unitRanai, unitBoulder]
+  unitHacker* = Unit(
+    name: "hacker",
+    title: "HACKER",
+    subtitle: "your ip, hand it over",
+    ability: "you have been pwned 10 days ago",
+    abilityReload:10
+  )
+  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei,unitFlare,unitEclipse,unitRanai,unitHacker, unitBoulder]
