@@ -1,6 +1,6 @@
 cd `dirname $(readlink -f $0)`
-nimble deploy
-nimble deploy mac
+nimble deploy linux
+nimble deploy win
 nimble androidPackage
 cp build/main-linux64 linuxandmac64
 cp build/main-win64.exe win64.exe
