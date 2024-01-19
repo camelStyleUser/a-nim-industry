@@ -331,10 +331,12 @@ template createUnits*() =
       addPoints(1)
   unitHacker.abilityProc = proc(entity: EntityRef, moves: int) =
     if moves mod 10 == 0:
+      let tmp=state.points;
       for x in 0..<mapSize*2+1:
         for y in 0..<mapSize*2+1:
           effectExplode(vec2(x-mapSize,y-mapSize))
           damageBlocks(vec2i(x-mapSize,y-mapSize))
+      state.points=tmp
   unitOct.abilityProc = proc(entity: EntityRef, moves: int) =
     var input = entity.fetch(Input)
     if input.shielded:
